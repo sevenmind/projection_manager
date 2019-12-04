@@ -1,0 +1,33 @@
+name: Test File Manager
+
+on: [push]
+
+jobs:
+  test:
+    name: Run Tests
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-elixir@v1.0.0
+        with:
+          otp-version: 22.x
+          elixir-version: 1.9.x
+      - run: mix deps.get
+        env:
+          MIX_ENV: test
+      - run: mix deps.compile
+        env:
+          MIX_ENV: test
+      - run: mix compile
+        env:
+          MIX_ENV: test
+      - name: Run Tests
+        run: mix coveralls.json
+        env:
+          MIX_ENV: test
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{secrets.CODECOV_TOKEN}} #required
+

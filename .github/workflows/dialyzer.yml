@@ -1,0 +1,41 @@
+name: Dialyzer
+
+on: [pull_request]
+
+jobs:
+  dialyzer:
+    name: runner / dialyzer
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-elixir@v1.0.0
+        with:
+          otp-version: 22.x
+          elixir-version: 1.9.x
+      - uses: gerbal/always-cache@v1.0.3
+        name: cache / mix deps
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-deps-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-deps-
+      - uses: gerbal/always-cache@v1.0.3
+        name: cache / mix _build
+        with:
+          path: _build
+          key: ${{ runner.os }}-mix-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-build-
+      - uses: gerbal/always-cache@v1.0.3
+        name: cache / dialyzer plt
+        with:
+          path: priv/plts
+          key: ${{ runner.os }}-mix-plt-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+          restore-keys: |
+            ${{ runner.os }}-mix-plt-
+      - run: mix deps.get
+      - run: mix deps.compile
+      - run: mix compile
+      - run: mix dialyzer
