@@ -98,9 +98,9 @@ defmodule ProjectionManagerTest do
 
   describe "child_spec" do
     test "returns valid child_spec" do
-      assert ProjectionManager.child_spec("init_arg") == %{
+      assert ProjectionManager.child_spec(%{}) == %{
                id: ProjectionManager,
-               start: {ProjectionManager, :start_link, ["init_arg"]}
+               start: {ProjectionManager, :start_link, [%{}]}
              }
     end
   end

@@ -7,7 +7,6 @@ defmodule ProjectionManager.MixProject do
       version: "0.1.0",
       elixir: "~> 1.9",
       test_coverage: [tool: ExCoveralls],
-      start_permanent: Mix.env() == :prod,
       consolidate_protocols: Mix.env() != :test,
       deps: deps(),
       dialyzer: [

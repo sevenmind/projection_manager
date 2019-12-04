@@ -126,17 +126,15 @@ defmodule ProjectionManager do
   # @derive Jason.Encoder
   defstruct [:projections, :supervisor, :projector, polling_frequency: 10_000]
 
-  def child_spec(arg) do
+  def child_spec(arg) when is_map(arg) do
     %{
-      id: __MODULE__,
+      id: Map.get(arg, :id, __MODULE__),
       start: {__MODULE__, :start_link, [arg]}
     }
   end
 
   def start_link(%{projector: _, supervisor: _} = args) do
-    name = Map.get(args, :name, __MODULE__)
-
-    GenServer.start_link(__MODULE__, args, name: name)
+    GenServer.start_link(__MODULE__, args, name: Map.get(args, :name, __MODULE__))
   end
 
   @impl true
