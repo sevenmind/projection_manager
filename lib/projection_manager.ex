@@ -112,7 +112,9 @@ defmodule ProjectionManager do
     @callback list_projections(map) :: [map]
     def list_projections(projector)
 
-    @callback projection_status(map) :: :init | :active | :building | :terminated
+    @type status :: :init | :active | :building | :terminated
+
+    @callback projection_status(map) :: status()
     def projection_status(projector)
 
     @callback after_terminate(map) :: any
