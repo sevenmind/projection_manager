@@ -216,6 +216,7 @@ defmodule ProjectionManager do
           supervisor: supervisor
         } = state
       ) do
+    start_time = System.monotonic_time()
     Logger.debug("ProjectionManager :refresh", projections: projection_info(projections))
     Process.send_after(self(), :refresh, polling_frequency)
 
@@ -234,6 +235,18 @@ defmodule ProjectionManager do
         projections: projection_info(new_projections)
       )
     end
+
+    :telemetry.execute(
+      [:projection_manager, :refresh],
+      %{
+        duration: System.monotonic_time() - start_time
+      },
+      %{
+        projector: projector,
+        projection_ids: projection_ids,
+        new_projection_ids: Enum.map(new_projections, & &1.projection_id)
+      }
+    )
 
     if Enum.any?(projections, &(&1.status != :active)) do
       {:noreply, %{state | projections: projections}, {:continue, :update_projection_status}}
